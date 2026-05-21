@@ -1,6 +1,6 @@
 # Starling FBAR Helper
 
-A command-line tool that fetches the previous calendar year's transaction feed from the Starling Bank API, saves it as a CSV file, and reports the highest account balance recorded across all transactions — the figure needed for FBAR (FinCEN 114) filings.
+A command-line tool that fetches the previous calendar year's transaction feed from the Starling Bank API across all accounts (current, savings, spaces), saves a CSV file per account, and reports the highest balance recorded across all accounts combined — the figure needed for FBAR (FinCEN 114) filings.
 
 ## Requirements
 
@@ -28,12 +28,7 @@ uv sync
 
 ### 3. Save the token
 
-Create a file called `token.txt` in the project root and paste your token into it:
-
-```
-paste-your-token-here
-```
-
+Create a file called `token.txt` in the project root and paste your token into it.
 This file is excluded from git via `.gitignore` and will never be committed.
 
 ## Running
@@ -46,18 +41,19 @@ uv run starling
 
 1. Reads the bearer token from `token.txt`
 2. Determines the date range — 1 January to 31 December of the previous calendar year
-3. Calls `GET /api/v2/accounts` to find the primary account
-4. Calls `GET /api/v2/accounts/{accountUid}/feed-export` to download all transactions for that year as CSV
-5. Saves the CSV to disk as `feed_export_{year}.csv`
-6. Scans the `Balance (GBP)` column across every transaction and prints the maximum balance
+3. Calls `GET /api/v2/accounts` to retrieve all accounts (current, savings, spaces)
+4. For each account, calls `GET /api/v2/accounts/{accountUid}/feed-export` to download that year's transactions as CSV
+5. Saves each account's CSV to disk as `feed_export_{account_name}_{year}.csv`
+6. Combines all transaction rows across every account and finds the single highest `Balance (GBP)` value
+7. Prints the overall maximum balance
 
 ## Expected output
 
 ```
-Max balance: 12345.67
+Max balance across all accounts: 12345.67
 ```
 
-A CSV file named `feed_export_2025.csv` (or whichever the previous year is) is also written to the project root. This file is excluded from git.
+One CSV file per account is written to the project root, e.g. `feed_export_personal_2025.csv` and `feed_export_test_account_2025.csv`. These files are excluded from git.
 
 ## Running tests
 
