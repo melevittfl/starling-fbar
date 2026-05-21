@@ -1,0 +1,21 @@
+[project]
+name = "starling"
+version = "0.1.0"
+requires-python = ">=3.14"
+dependencies = ["httpx"]
+
+[project.scripts]
+starling = "starling.main:main"
+
+[dependency-groups]
+dev = ["pytest", "pytest-httpx", "ruff"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+
+[tool.ruff]
+line-length = 88
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
