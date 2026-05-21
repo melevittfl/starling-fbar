@@ -1,5 +1,6 @@
 import csv
 import io
+import math
 import time
 from dataclasses import dataclass
 from datetime import datetime
@@ -179,7 +180,8 @@ def main() -> None:
 
     csv_max = find_max_balance(csv_content)
     overall_max = csv_max + sum(space_maxes)
-    print(f"\nMax balance across all accounts: {overall_max}")
+    print(f"\nMax balance across all accounts: £{overall_max:.2f}")
+    print(f"Max balance rounded up (for FBAR reporting): £{math.ceil(overall_max)}")
 
 
 if __name__ == "__main__":

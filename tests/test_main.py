@@ -292,19 +292,33 @@ def test_find_max_balance_empty():
 
 
 def test_overall_max_adds_csv_and_space_peaks():
+    import math
+
     # csv_max = 1001.00, space_maxes = [400.00, 200.00]
-    # overall = 1001.00 + 400.00 + 200.00 = 1601.00 (intentional over-estimate for FBAR)
+    # overall = ceil(1601.00) = 1601 (intentional over-estimate for FBAR)
     csv_max = 1001.00
     space_maxes = [400.00, 200.00]
-    overall_max = csv_max + sum(space_maxes)
-    assert overall_max == 1601.00
+    overall_max = math.ceil(csv_max + sum(space_maxes))
+    assert overall_max == 1601
+
+
+def test_overall_max_rounds_up():
+    import math
+
+    # Fractional pence should round up, never down
+    csv_max = 1001.01
+    space_maxes = [0.50]
+    overall_max = math.ceil(csv_max + sum(space_maxes))
+    assert overall_max == 1002
 
 
 def test_overall_max_no_spaces():
+    import math
+
     csv_max = 1001.00
     space_maxes = []
-    overall_max = csv_max + sum(space_maxes)
-    assert overall_max == 1001.00
+    overall_max = math.ceil(csv_max + sum(space_maxes))
+    assert overall_max == 1001
 
 
 def test_get_date_range(monkeypatch):

@@ -1,6 +1,6 @@
 # Starling FBAR Helper
 
-A command-line tool that fetches the previous calendar year's transaction feed from the Starling Bank API across all accounts (current, savings, spaces), saves a CSV file per account, and reports the highest balance recorded across all accounts combined — the figure needed for FBAR (FinCEN 114) filings.
+A command-line tool that fetches the previous calendar year's transaction data from the Starling Bank API, saves a transaction CSV, and reports the highest balance held across all accounts and savings spaces during the year — the figure needed for FBAR (FinCEN 114) foreign bank account reporting.
 
 ## Requirements
 
@@ -24,6 +24,8 @@ uv sync
    - `account-list:read`
    - `account-identifier:read`
    - `feed-export-csv:read`
+   - `savings-goal:read`
+   - `savings-goal-transaction:read`
 4. Copy the token
 
 ### 3. Save the token
@@ -40,20 +42,24 @@ uv run starling
 ## How it works
 
 1. Reads the bearer token from `token.txt`
-2. Determines the date range — 1 January to 31 December of the previous calendar year
-3. Calls `GET /api/v2/accounts` to retrieve all accounts (current, savings, spaces)
-4. For each account, calls `GET /api/v2/accounts/{accountUid}/feed-export` to download that year's transactions as CSV
-5. Saves each account's CSV to disk as `feed_export_{account_name}_{year}.csv`
-6. Combines all transaction rows across every account and finds the single highest `Balance (GBP)` value
-7. Prints the overall maximum balance
+2. Determines the target date range — 1 January to 31 December of the previous calendar year
+3. Fetches all accounts via `GET /api/v2/accounts`
+4. Downloads the primary account's transaction feed as CSV via `GET /api/v2/accounts/{accountUid}/feed-export` and saves it to disk as `feed_export_{account_name}_{year}.csv`
+5. For every account, fetches all active savings spaces via `GET /api/v2/account/{accountUid}/spaces`
+6. For each space, fetches transactions during the target year and from 1 January of the current year to now, then reconstructs the peak balance the space held at any point during the target year
+7. Reports the exact combined peak balance and a ceiling-rounded figure ready for FBAR entry
 
 ## Expected output
 
 ```
-Max balance across all accounts: 12345.67
+Trip Fund (Space, Personal): 2500.0
+Rainy Day (Space, Personal): 800.0
+
+Max balance across all accounts: £15432.18
+Max balance rounded up (for FBAR reporting): £15433
 ```
 
-One CSV file per account is written to the project root, e.g. `feed_export_personal_2025.csv` and `feed_export_test_account_2025.csv`. These files are excluded from git.
+The transaction CSV is written to the project root, e.g. `feed_export_personal_2025.csv`. This file is excluded from git.
 
 ## Running tests
 
