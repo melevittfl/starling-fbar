@@ -47,7 +47,7 @@ uv run starling
 4. Downloads the primary account's transaction feed as CSV via `GET /api/v2/accounts/{accountUid}/feed-export` and saves it to disk as `feed_export_{account_name}_{year}.csv`
 5. For every account, fetches all active savings spaces via `GET /api/v2/account/{accountUid}/spaces`
 6. For each space, fetches transactions during the target year and from 1 January of the current year to now, then reconstructs the peak balance the space held at any point during the target year
-7. Reports the exact combined peak balance and a ceiling-rounded figure ready for FBAR entry
+7. Reports the combined peak balance and a ceiling-rounded figure ready for FBAR entry
 
 ## Expected output
 
