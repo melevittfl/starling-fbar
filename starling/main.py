@@ -1,5 +1,6 @@
 import csv
 import io
+import time
 from dataclasses import dataclass
 from datetime import datetime
 
@@ -87,15 +88,21 @@ def fetch_space_transactions(
     min_timestamp: str,
     max_timestamp: str,
 ) -> list[dict]:
-    response = client.get(
-        f"/api/v2/feed/account/{account_uid}/category/{category_uid}/transactions-between",
-        params={
-            "minTransactionTimestamp": min_timestamp,
-            "maxTransactionTimestamp": max_timestamp,
-        },
-    )
+    for attempt in range(4):
+        response = client.get(
+            f"/api/v2/feed/account/{account_uid}/category/{category_uid}/transactions-between",
+            params={
+                "minTransactionTimestamp": min_timestamp,
+                "maxTransactionTimestamp": max_timestamp,
+            },
+        )
+        if response.status_code == 429:
+            time.sleep(2**attempt)
+            continue
+        response.raise_for_status()
+        return response.json().get("feedItems", [])
     response.raise_for_status()
-    return response.json().get("feedItems", [])
+    return []
 
 
 def save_csv(content: str, path: str) -> None:
