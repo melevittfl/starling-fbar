@@ -1,5 +1,7 @@
 import datetime
 
+import httpx
+
 from starling.main import (
     fetch_feed_export,
     find_max_balance,
@@ -50,7 +52,11 @@ def test_get_default_account(httpx_mock):
         url="https://api.starlingbank.com/api/v2/accounts",
         json=ACCOUNTS_RESPONSE,
     )
-    result = get_default_account("my-token")
+    with httpx.Client(
+        base_url="https://api.starlingbank.com",
+        headers={"Authorization": "Bearer my-token"},
+    ) as client:
+        result = get_default_account(client)
     assert result == "primary-account-uid"
     request = httpx_mock.get_requests()[0]
     assert request.headers["authorization"] == "Bearer my-token"
@@ -64,7 +70,11 @@ def test_fetch_feed_export(httpx_mock):
         text=SAMPLE_CSV,
         headers={"content-type": "text/csv"},
     )
-    result = fetch_feed_export("my-token", account_uid, start, end)
+    with httpx.Client(
+        base_url="https://api.starlingbank.com",
+        headers={"Authorization": "Bearer my-token"},
+    ) as client:
+        result = fetch_feed_export(client, account_uid, start, end)
     assert result == SAMPLE_CSV
     request = httpx_mock.get_requests()[0]
     assert request.headers["accept"] == "text/csv"
