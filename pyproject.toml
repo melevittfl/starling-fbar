@@ -10,6 +10,9 @@ starling = "starling.main:main"
 [dependency-groups]
 dev = ["pytest", "pytest-httpx", "ruff"]
 
+[tool.uv]
+package = true
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["."]
