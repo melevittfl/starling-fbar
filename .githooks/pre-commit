@@ -1,0 +1,7 @@
+#!/bin/sh
+bad=$(git diff --cached --name-only | grep -iE '(^|/)([^/]*token[^/]*\.(txt|token)|tokens/[^/]+)$' | grep -v '\.gitkeep$')
+if [ -n "$bad" ]; then
+  echo "pre-commit: refusing to commit likely token file(s):"
+  echo "$bad" | sed 's/^/  /'
+  exit 1
+fi

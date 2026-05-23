@@ -1,4 +1,9 @@
+# API tokens — any filename
 token.txt
+tokens/*
+!tokens/.gitkeep
+*token*.txt
+*.token
 .venv/
 __pycache__/
 *.pyc

@@ -30,18 +30,40 @@ uv sync
 
 ### 3. Save the token
 
-Create a file called `token.txt` in the project root and paste your token into it.
-This file is excluded from git via `.gitignore` and will never be committed.
+Paste your token into a file. The recommended location is the `tokens/` directory,
+which is excluded from git:
+
+```bash
+echo "your-token-here" > tokens/personal.txt
+```
+
+You can also use `token.txt` in the project root — that path is excluded too.
+
+### 4. Activate the pre-commit hook (one-time)
+
+```bash
+git config core.hooksPath .githooks
+```
+
+This installs a hook that blocks accidental commits of any token-like file.
 
 ## Running
 
 ```bash
-uv run starling
+uv run starling --token tokens/personal.txt
+```
+
+Pass `--token <path>` to point at your token file. Omitting the flag defaults to `token.txt`.
+
+To run against a second account with a different token:
+
+```bash
+uv run starling --token tokens/joint_account.txt
 ```
 
 ## How it works
 
-1. Reads the bearer token from `token.txt`
+1. Reads the bearer token from the file specified by `--token` (default: `token.txt`)
 2. Determines the target date range — 1 January to 31 December of the previous calendar year
 3. Fetches all accounts via `GET /api/v2/accounts`
 4. Downloads the primary account's transaction feed as CSV via `GET /api/v2/accounts/{accountUid}/feed-export` and saves it to disk as `feed_export_{account_name}_{year}.csv`

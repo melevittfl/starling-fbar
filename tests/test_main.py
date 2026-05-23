@@ -15,6 +15,7 @@ from starling.main import (
     get_date_range,
     get_spaces,
     get_timestamp_range,
+    main,
     net_pence,
     read_token,
     save_csv,
@@ -107,6 +108,12 @@ def test_read_token(tmp_path):
     token_file = tmp_path / "token.txt"
     token_file.write_text("  my-secret-token\n  ")
     assert read_token(str(token_file)) == "my-secret-token"
+
+
+def test_read_token_custom_path(tmp_path):
+    token_file = tmp_path / "my_account_token.txt"
+    token_file.write_text("other-account-token\n")
+    assert read_token(str(token_file)) == "other-account-token"
 
 
 def test_get_all_accounts(httpx_mock):

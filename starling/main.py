@@ -1,3 +1,4 @@
+import argparse
 import csv
 import io
 import math
@@ -149,7 +150,14 @@ def compute_max_balance(
 
 
 def main() -> None:
-    token = read_token("token.txt")
+    parser = argparse.ArgumentParser(description="Export Starling Bank feed data")
+    parser.add_argument(
+        "--token",
+        default="token.txt",
+        help="Path to the file containing the API token (default: token.txt)",
+    )
+    args = parser.parse_args()
+    token = read_token(args.token)
     start, end = get_date_range()
     year_start, year_end, post_start, now_ts = get_timestamp_range()
     year = start[:4]
